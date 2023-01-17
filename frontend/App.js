@@ -11,14 +11,7 @@ import {
 export default function App() {
   return (
     <View style={styles.container}>
-      <SafeAreaView
-        style={{
-          backgroundColor: theme.lightGray,
-          width: "100%",
-          flex: 0.75,
-          flexDirection: "row",
-        }}
-      >
+      <SafeAreaView style={styles.navbar}>
         <View
           style={{
             height: "100%",
@@ -27,15 +20,7 @@ export default function App() {
             paddingLeft: 20,
           }}
         >
-          <TouchableOpacity
-            style={{
-              backgroundColor: theme.lightBlue,
-              height: "80%",
-              justifyContent: "center",
-              alignItems: "center",
-              borderRadius: 10,
-            }}
-          >
+          <TouchableOpacity style={styles.btn}>
             <Text style={{ fontSize: 20 }}>Login</Text>
           </TouchableOpacity>
         </View>
@@ -47,15 +32,7 @@ export default function App() {
             paddingLeft: 10,
           }}
         >
-          <TouchableOpacity
-            style={{
-              backgroundColor: theme.lightBlue,
-              height: "80%",
-              justifyContent: "center",
-              alignItems: "center",
-              borderRadius: 10,
-            }}
-          >
+          <TouchableOpacity style={styles.btn}>
             <Text style={{ fontSize: 20 }}>Signup</Text>
           </TouchableOpacity>
         </View>
@@ -91,5 +68,18 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: theme.lightGray,
+  },
+  navbar: {
+    backgroundColor: theme.lightGray,
+    width: "100%",
+    flex: 0.75,
+    flexDirection: "row",
+  },
+  btn: {
+    backgroundColor: theme.lightBlue,
+    height: "80%",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 10,
   },
 });
