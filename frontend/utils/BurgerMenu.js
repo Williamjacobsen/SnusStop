@@ -9,6 +9,7 @@ export default function BurgerMenu({ menu }) {
   useEffect(() => {
     if (menu) {
       setMenuOpacity(0);
+      setMenuHeight(88);
       var counter = 1;
       var fadein = setInterval(() => {
         if (counter == 11) {
@@ -23,6 +24,7 @@ export default function BurgerMenu({ menu }) {
       var counter = 1;
       var fadeout = setInterval(() => {
         if (counter == 11) {
+          setMenuHeight(0);
           clearInterval(fadeout);
         } else {
           counter++;
