@@ -1,5 +1,4 @@
 import {
-  StyleSheet,
   Text,
   View,
   SafeAreaView,
@@ -67,6 +66,67 @@ export default function LandingPage() {
       </SafeAreaView>
       <View style={{ flex: 10, backgroundColor: "#fff" }}></View>
       <BurgerMenu menu={menu} />
+      <View
+        style={{
+          position: "absolute",
+          width: "100%",
+          height: "40%",
+          top: "20%",
+          alignItems: "center",
+          zIndex: 0,
+        }}
+      >
+        <Text
+          style={{
+            fontSize: 50,
+            textAlign: "center",
+            fontWeight: "700",
+            color: theme.lightBlue,
+          }}
+        >
+          VIL DU PÅ AFVÆNNING?
+        </Text>
+        <Text
+          style={{
+            fontSize: 25,
+            textAlign: "center",
+            fontWeight: "600",
+            opacity: 0.5,
+          }}
+        >
+          Flere forskellige programmer {"\n"}Kalender & timers {"\n"}Finansielle
+          tracker
+        </Text>
+      </View>
+      <TouchableOpacity
+        style={{
+          backgroundColor: theme.lightBlue,
+          justifyContent: "center",
+          alignItems: "center",
+          borderRadius: 10,
+          position: "relative",
+          bottom: "20%",
+          width: "80%",
+          height: "7,5%",
+          left: "10%",
+        }}
+      >
+        <Text style={{ fontSize: 20, fontWeight: "600" }}>
+          Opret Konto & Start Nu
+        </Text>
+      </TouchableOpacity>
+      <View
+        style={{
+          height: 4,
+          width: "80%",
+          backgroundColor: "gray",
+          opacity: 0.5,
+          position: "relative",
+          left: "10%",
+          bottom: "15%",
+          borderRadius: 10,
+        }}
+      ></View>
     </View>
   );
 }

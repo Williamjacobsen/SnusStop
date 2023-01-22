@@ -8,7 +8,6 @@ const theme = {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: theme.lightGray,
   },
   navbar: {
     backgroundColor: theme.lightGray,

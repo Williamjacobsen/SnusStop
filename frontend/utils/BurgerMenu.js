@@ -16,9 +16,9 @@ export default function BurgerMenu({ menu }) {
           clearInterval(fadein);
         } else {
           counter++;
-          setMenuOpacity((prev) => prev + 0.1);
+          setMenuOpacity((prev) => prev + 0.08);
         }
-      }, 25);
+      }, 10);
     }
     if (!menu) {
       var counter = 1;
@@ -28,9 +28,9 @@ export default function BurgerMenu({ menu }) {
           clearInterval(fadeout);
         } else {
           counter++;
-          setMenuOpacity((prev) => prev - 0.1);
+          setMenuOpacity((prev) => prev - 0.08);
         }
-      }, 25);
+      }, 10);
     }
   }, [menu]);
 
@@ -40,11 +40,12 @@ export default function BurgerMenu({ menu }) {
     <View
       style={{
         position: "absolute",
-        top: "12%",
-        height: `${menuHeight}%`,
+        top: "11.5%",
+        height: `${menuHeight + 0.5}%`,
         width: "100%",
         backgroundColor: theme.lightBlue,
         opacity: menuOpacity,
+        zIndex: 10,
       }}
     ></View>
   );
