@@ -9,13 +9,16 @@ import {
 import { useState, useEffect } from "react";
 import { theme, styles } from "./../utils/style.js";
 import BurgerMenu from "./../utils/BurgerMenu.js";
+import Login from "./../utils/Login.js";
 
 export default function LandingPage() {
   const [menu, setMenu] = useState(false);
+  const [login, setLogin] = useState(false);
+  const [signup, setSignup] = useState(false);
 
   useEffect(() => {
-    console.log(`menu : ${menu}`);
-  }, [menu]);
+    console.log(`\nmenu : ${menu}\nlogin : ${login}\nsignup : ${signup}\n`);
+  }, [menu, login, signup]);
 
   return (
     <View style={styles.container}>
@@ -28,7 +31,14 @@ export default function LandingPage() {
             paddingLeft: 20,
           }}
         >
-          <TouchableOpacity style={styles.btn}>
+          <TouchableOpacity
+            style={styles.btn}
+            onPress={() => {
+              setLogin((prev) => !prev);
+              setSignup(false);
+              setMenu(false);
+            }}
+          >
             <Text style={{ fontSize: 20 }}>Login</Text>
           </TouchableOpacity>
         </View>
@@ -40,7 +50,14 @@ export default function LandingPage() {
             paddingLeft: 10,
           }}
         >
-          <TouchableOpacity style={styles.btn}>
+          <TouchableOpacity
+            style={styles.btn}
+            onPress={() => {
+              setSignup((prev) => !prev);
+              setLogin(false);
+              setMenu(false);
+            }}
+          >
             <Text style={{ fontSize: 20 }}>Signup</Text>
           </TouchableOpacity>
         </View>
@@ -51,7 +68,13 @@ export default function LandingPage() {
             justifyContent: "center",
           }}
         >
-          <TouchableOpacity onPress={() => setMenu((prev) => !prev)}>
+          <TouchableOpacity
+            onPress={() => {
+              setMenu((prev) => !prev);
+              setSignup(false);
+              setLogin(false);
+            }}
+          >
             <Image
               source={require("./../assets/burger_menu.png")}
               style={{
@@ -66,6 +89,7 @@ export default function LandingPage() {
       </SafeAreaView>
       <View style={{ flex: 10, backgroundColor: "#fff" }}></View>
       <BurgerMenu menu={menu} />
+      <Login state={login} setLogin={setLogin} />
       <View
         style={{
           position: "absolute",
@@ -117,13 +141,13 @@ export default function LandingPage() {
       </TouchableOpacity>
       <View
         style={{
-          height: 4,
+          height: 3,
           width: "80%",
           backgroundColor: "gray",
           opacity: 0.5,
           position: "relative",
           left: "10%",
-          bottom: "15%",
+          bottom: "17.5%",
           borderRadius: 10,
         }}
       ></View>

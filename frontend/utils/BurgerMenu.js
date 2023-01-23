@@ -34,8 +34,6 @@ export default function BurgerMenu({ menu }) {
     }
   }, [menu]);
 
-  useEffect(() => console.log(`menuOpacity : ${menuOpacity}`), [menuOpacity]);
-
   return (
     <View
       style={{
