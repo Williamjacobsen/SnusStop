@@ -89,7 +89,7 @@ export default function LandingPage() {
       </SafeAreaView>
       <View style={{ flex: 10, backgroundColor: "#fff" }}></View>
       <BurgerMenu menu={menu} />
-      <Login state={login} setLogin={setLogin} />
+      <Login state={login} setState={setLogin} />
       <View
         style={{
           position: "absolute",

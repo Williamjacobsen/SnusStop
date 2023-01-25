@@ -22,6 +22,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderRadius: 10,
   },
+  input: {
+    backgroundColor: "#fff",
+    width: "80%",
+    height: 50,
+    borderRadius: 10,
+    borderColor: "gray",
+    borderWidth: 1,
+    marginTop: "5%",
+    fontSize: 20,
+    paddingLeft: 20,
+  },
 });
 
 module.exports = { theme, styles };
