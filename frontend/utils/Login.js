@@ -1,15 +1,15 @@
-import { TouchableOpacity, View, Text } from "react-native";
+import { TouchableOpacity, View, Text, Image } from "react-native";
 import { useState, useEffect } from "react";
 import { theme, styles } from "./../utils/style.js";
 
 export default function Login({ state, setState }) {
   const [menuOpacity, setMenuOpacity] = useState(0);
-  const [menuHeight, setMenuHeight] = useState(88);
+  const [menuHeight, setMenuHeight] = useState(100);
 
   useEffect(() => {
     if (state) {
       setMenuOpacity(0);
-      setMenuHeight(88);
+      setMenuHeight(100);
       var counter = 1;
       var fadein = setInterval(() => {
         if (counter == 11) {
@@ -42,7 +42,7 @@ export default function Login({ state, setState }) {
           width: "100%",
           height: "100%",
           backgroundColor: "#000",
-          opacity: state ? 0.5 : 0,
+          opacity: menuOpacity / 2,
         }}
       ></View>
     );
@@ -56,8 +56,37 @@ export default function Login({ state, setState }) {
           height: "70%",
           backgroundColor: theme.lightGray,
           borderRadius: 10,
+          opacity: menuOpacity,
         }}
-      ></View>
+      >
+        <TouchableOpacity
+          style={{
+            position: "relative",
+            left: "80%",
+            top: "5%",
+            zIndex: 11,
+            opacity: state ? 1 : 0,
+          }}
+          onPress={() => {
+            setState((prev) => !prev);
+          }}
+        >
+          <Image
+            source={require("./../assets/close.png")}
+            style={{ height: 40, width: 40 }}
+          ></Image>
+        </TouchableOpacity>
+        <Text
+          style={{
+            fontSize: 50,
+            textAlign: "center",
+            fontWeight: "600",
+            color: theme.lightBlue,
+          }}
+        >
+          Login
+        </Text>
+      </View>
     );
   };
 
@@ -66,7 +95,7 @@ export default function Login({ state, setState }) {
       style={{
         position: "absolute",
         width: "100%",
-        height: state ? "100%" : "0%",
+        height: `${menuHeight}%`,
         zIndex: 10,
         justifyContent: "center",
         alignItems: "center",
