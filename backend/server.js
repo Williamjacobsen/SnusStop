@@ -18,9 +18,58 @@ app.use(
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
+const db = mysql.createConnection({
+  user: "root",
+  host: "localhost",
+  password: "password",
+  database: "snusstop",
+});
+
+const createAccount = (req, userExists) => {
+  if (!userExists && req.body.id) {
+    db.query(
+      `INSERT INTO accounts (google_id, email, verified_email, name, given_name, family_name, picture, locale) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        req.body.id,
+        req.body.email,
+        req.body.verified_email ? 1 : 0,
+        req.body.name,
+        req.body.given_name,
+        req.body.family_name,
+        req.body.picture,
+        req.body.locale,
+      ],
+      (err, result) => {
+        if (err) {
+          console.error(err);
+          res.send({ status: "failure", message: null });
+        } else {
+          console.log(`Successfully created account google_id: ${req.body.id}`);
+          res.send({ status: "success", message: "newAccountCreated" });
+        }
+      }
+    );
+  }
+};
+
 app.post("/signIn", (req, res) => {
-  console.log(req.body);
-  res.send(req.body);
+  let userExists = false;
+  db.query(
+    `SELECT * FROM accounts WHERE google_id = ${req.body.id}`,
+    (err, result) => {
+      if (err) {
+        console.error(err);
+        res.send({ status: "failure", message: null });
+      }
+      if (result[0]) {
+        userExists = true;
+        console.log(`Account already exists with google_id ${req.body.id}`);
+        res.send({ status: "success", message: "loggedIn" });
+      } else {
+        createAccount(req, userExists);
+      }
+    }
+  );
 });
 
 app.listen(5000, () => console.log(`Server listening on port 5000...`));
