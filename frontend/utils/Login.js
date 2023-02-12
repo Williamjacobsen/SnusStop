@@ -80,7 +80,7 @@ const GoogleAuth = function () {
   React.useEffect(() => {
     if (userInfo) {
       console.log("Signing into backend...");
-      fetch("https://345e-5-33-39-134.eu.ngrok.io/signIn", {
+      fetch("https://2654-5-33-39-134.eu.ngrok.io/signIn", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
