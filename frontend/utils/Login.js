@@ -1,8 +1,87 @@
-import { TouchableOpacity, View, Text, Image, TextInput } from "react-native";
+import {
+  TouchableOpacity,
+  View,
+  Text,
+  Image,
+  TextInput,
+  Button,
+} from "react-native";
 import { useState, useEffect } from "react";
 import { theme, styles } from "./../utils/style.js";
-const closeBtn = require("./../assets/close.png");
-const userIcon = require("./../assets/user.png");
+const closeBtnPath = require("./../assets/close.png");
+import React from "react";
+import * as Google from "expo-auth-session/providers/google";
+
+const CloseBtn = React.memo(function () {
+  return (
+    <Image
+      style={{ height: 30, width: 30 }}
+      source={closeBtnPath}
+      defaultSource={closeBtnPath} // stop flickering, but lags animation
+    />
+  );
+});
+
+const userIconPath = require("./../assets/user.png");
+
+const UserIcon = React.memo(function () {
+  return (
+    <Image
+      style={{
+        height: "15%",
+        width: "23%",
+        marginTop: "7.5%",
+        opacity: 0.5,
+      }}
+      source={userIconPath}
+      defaultSource={userIconPath}
+    />
+  );
+});
+
+const GoogleAuth = function () {
+  const [accessToken, setAccessToken] = React.useState(null);
+  const [userInfo, setUserInfo] = React.useState(null);
+
+  const [request, response, promptAsync] = Google.useAuthRequest({
+    clientId:
+      "893924894033-ld7fjv8vd68shqjkh7mldknqjisvis23.apps.googleusercontent.com",
+    iosClientId:
+      "893924894033-0eldbtl66u94i97nivjfcf2ij4j4kqr6.apps.googleusercontent.com",
+  });
+
+  React.useEffect(() => {
+    if (response?.type === "success") {
+      if (response.authentication?.accessToken) {
+        setAccessToken(response.authentication.accessToken);
+      }
+    }
+  }, [response]);
+
+  const fetchUserInfo = async () => {
+    if (accessToken && !userInfo) {
+      let userInfoResponse = await fetch(
+        "https://www.googleapis.com/userinfo/v2/me",
+        { headers: { Authorization: `Bearer ${accessToken}` } }
+      );
+      userInfoResponse.json().then((data) => {
+        console.log(data);
+        setUserInfo(data);
+      });
+    }
+  };
+
+  return (
+    <Button
+      title={accessToken ? "Get User Info" : "Login"}
+      onPress={
+        accessToken
+          ? fetchUserInfo()
+          : () => promptAsync({ useProxy: true, showInRecents: true })
+      }
+    />
+  );
+};
 
 export default function Login({ state, setState }) {
   const [menuOpacity, setMenuOpacity] = useState(0);
@@ -10,8 +89,8 @@ export default function Login({ state, setState }) {
 
   useEffect(() => {
     if (state) {
-      setMenuOpacity(0);
-      setMenuHeight(100);
+      setMenuOpacity(1);
+      setMenuHeight(100); /*
       var counter = 1;
       var fadein = setInterval(() => {
         if (counter == 11) {
@@ -20,10 +99,12 @@ export default function Login({ state, setState }) {
           counter++;
           setMenuOpacity((prev) => prev + 0.1);
         }
-      }, 25);
+      }, 25);*/
     }
     if (!state) {
-      var counter = 1;
+      setMenuOpacity(0);
+      setMenuHeight(0);
+      var counter = 1; /*
       var fadeout = setInterval(() => {
         if (counter == 11) {
           setMenuHeight(0);
@@ -32,7 +113,7 @@ export default function Login({ state, setState }) {
           counter++;
           setMenuOpacity((prev) => prev - 0.1);
         }
-      }, 25);
+      }, 25);*/
     }
   }, [state]);
 
@@ -77,11 +158,7 @@ export default function Login({ state, setState }) {
             setState((prev) => !prev);
           }}
         >
-          <Image
-            style={{ height: 30, width: 30 }}
-            source={closeBtn}
-            defaultSource={closeBtn} // stop flickering, but lags animation
-          />
+          <CloseBtn />
         </TouchableOpacity>
         <Text
           style={{
@@ -105,22 +182,19 @@ export default function Login({ state, setState }) {
           }}
         ></View>
         <View style={{ height: "80%", alignItems: "center" }}>
-          <Image
-            style={{
-              height: "15%",
-              width: "23%",
-              marginTop: "7.5%",
-              opacity: 0.5,
-            }}
-            source={userIcon}
-            defaultSource={userIcon}
-          />
+          <UserIcon />
           <TextInput
-            style={[styles.input, { height: state ? 50 : 0 }]}
+            style={[
+              styles.input,
+              { height: state ? 50 : 0, zIndex: state ? 10 : 0 },
+            ]}
             placeholder="Brugernavn..."
           />
           <TextInput
-            style={[styles.input, { height: state ? 50 : 0 }]}
+            style={[
+              styles.input,
+              { height: state ? 50 : 0, zIndex: state ? 10 : 0 },
+            ]}
             placeholder="Adgangskode..."
           />
           <TouchableOpacity
@@ -145,6 +219,7 @@ export default function Login({ state, setState }) {
               >
                 Log ind med
               </Text>
+              <GoogleAuth />
             </View>
           </TouchableOpacity>
           <TouchableOpacity
