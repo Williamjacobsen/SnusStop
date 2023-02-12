@@ -71,14 +71,33 @@ const GoogleAuth = function () {
     }
   };
 
+  React.useEffect(() => {
+    if (accessToken) {
+      fetchUserInfo();
+    }
+  }, [accessToken]);
+
+  React.useEffect(() => {
+    if (userInfo) {
+      console.log("Signing into backend...");
+      fetch("https://345e-5-33-39-134.eu.ngrok.io/signIn", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify(userInfo),
+      })
+        .then((data) => data.json())
+        .then((data) => console.log(data))
+        .catch((err) => console.error(err));
+    }
+  }, [userInfo]);
+
   return (
     <Button
-      title={accessToken ? "Get User Info" : "Login"}
-      onPress={
-        accessToken
-          ? fetchUserInfo()
-          : () => promptAsync({ useProxy: true, showInRecents: true })
-      }
+      title={"Login"}
+      onPress={() => promptAsync({ useProxy: true, showInRecents: true })}
     />
   );
 };
