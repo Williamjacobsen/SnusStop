@@ -39,7 +39,9 @@ const UserIcon = React.memo(function () {
   );
 });
 
-const GoogleAuth = function () {
+const GoogleAuth = function (state) {
+  const backendURL = "https://553f-5-33-39-134.eu.ngrok.io";
+
   const [accessToken, setAccessToken] = React.useState(null);
   const [userInfo, setUserInfo] = React.useState(null);
 
@@ -80,7 +82,7 @@ const GoogleAuth = function () {
   React.useEffect(() => {
     if (userInfo) {
       console.log("Signing into backend...");
-      fetch("https://2654-5-33-39-134.eu.ngrok.io/signIn", {
+      fetch(`${backendURL}/signIn`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -95,10 +97,42 @@ const GoogleAuth = function () {
   }, [userInfo]);
 
   return (
-    <Button
-      title={"Login"}
+    <TouchableOpacity
       onPress={() => promptAsync({ useProxy: true, showInRecents: true })}
-    />
+      style={{ width: "100%", position: "relative", left: "10%" }}
+    >
+      <View
+        style={[
+          styles.input,
+          {
+            height: state ? 50 : 0,
+            marginTop: "15%",
+            justifyContent: "center",
+          },
+        ]}
+      >
+        <Text
+          style={{
+            fontSize: 20,
+            opacity: 0.75,
+            paddingLeft: "10%",
+          }}
+        >
+          Log ind med
+        </Text>
+        <Image
+          style={{
+            height: 35,
+            width: 35,
+            marginTop: -35,
+            position: "relative",
+            top: 5,
+            left: "65%",
+          }}
+          defaultSource={require("./../assets/google.png")}
+        ></Image>
+      </View>
+    </TouchableOpacity>
   );
 };
 
@@ -216,31 +250,9 @@ export default function Login({ state, setState }) {
             ]}
             placeholder="Adgangskode..."
           />
-          <TouchableOpacity
-            style={{ width: "100%", position: "relative", left: "10%" }}
-          >
-            <View
-              style={[
-                styles.input,
-                {
-                  height: state ? 50 : 0,
-                  marginTop: "15%",
-                  justifyContent: "center",
-                },
-              ]}
-            >
-              <Text
-                style={{
-                  fontSize: 20,
-                  opacity: 0.75,
-                  paddingLeft: "10%",
-                }}
-              >
-                Log ind med
-              </Text>
-              <GoogleAuth />
-            </View>
-          </TouchableOpacity>
+
+          <GoogleAuth props={state} />
+
           <TouchableOpacity
             style={{ width: "100%", position: "relative", left: "10%" }}
           >
