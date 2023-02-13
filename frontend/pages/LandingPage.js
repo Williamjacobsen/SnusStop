@@ -10,8 +10,11 @@ import { useState, useEffect } from "react";
 import { theme, styles } from "./../utils/style.js";
 import BurgerMenu from "./../utils/BurgerMenu.js";
 import Login from "./../utils/Login.js";
+import Signup from "./../utils/Signup.js";
 
 export default function LandingPage() {
+  const [newAccount, setNewAccount] = useState(false);
+
   const [menu, setMenu] = useState(false);
   const [login, setLogin] = useState(false);
   const [signup, setSignup] = useState(false);
@@ -19,6 +22,12 @@ export default function LandingPage() {
   useEffect(() => {
     console.log(`\nmenu : ${menu}\nlogin : ${login}\nsignup : ${signup}\n`);
   }, [menu, login, signup]);
+
+  useEffect(() => {
+    setMenu(false);
+    setLogin(false);
+    setSignup(true);
+  }, [newAccount]);
 
   return (
     <View style={styles.container}>
@@ -88,8 +97,24 @@ export default function LandingPage() {
         </View>
       </SafeAreaView>
       <View style={{ flex: 10, backgroundColor: "#fff" }}></View>
+
       <BurgerMenu menu={menu} />
-      <Login state={login} setState={setLogin} />
+      {newAccount ? (
+        <></>
+      ) : (
+        <Login
+          state={login}
+          setState={setLogin}
+          setNewAccount={setNewAccount}
+        />
+      )}
+      <Signup
+        state={signup}
+        setState={setSignup}
+        newAccount={newAccount}
+        setNewAccount={setNewAccount}
+      />
+
       <View
         style={{
           position: "absolute",

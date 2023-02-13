@@ -11,6 +11,7 @@ import { theme, styles } from "./../utils/style.js";
 const closeBtnPath = require("./../assets/close.png");
 import React from "react";
 import * as Google from "expo-auth-session/providers/google";
+import backendURL from "./../env.json";
 
 const CloseBtn = React.memo(function () {
   return (
@@ -39,8 +40,8 @@ const UserIcon = React.memo(function () {
   );
 });
 
-const GoogleAuth = function (state) {
-  const backendURL = "https://553f-5-33-39-134.eu.ngrok.io";
+const GoogleAuth = function ({ state, setNewAccount }) {
+  const NgrokURL = backendURL.NgrokURL;
 
   const [accessToken, setAccessToken] = React.useState(null);
   const [userInfo, setUserInfo] = React.useState(null);
@@ -82,7 +83,7 @@ const GoogleAuth = function (state) {
   React.useEffect(() => {
     if (userInfo) {
       console.log("Signing into backend...");
-      fetch(`${backendURL}/signIn`, {
+      fetch(`${NgrokURL}/signIn`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -91,7 +92,12 @@ const GoogleAuth = function (state) {
         body: JSON.stringify(userInfo),
       })
         .then((data) => data.json())
-        .then((data) => console.log(data))
+        .then((data) => {
+          console.log(data);
+          if (data.message === "newAccountCreated") {
+            setNewAccount(true);
+          }
+        })
         .catch((err) => console.error(err));
     }
   }, [userInfo]);
@@ -136,7 +142,7 @@ const GoogleAuth = function (state) {
   );
 };
 
-export default function Login({ state, setState }) {
+export default function Login({ state, setState, setNewAccount }) {
   const [menuOpacity, setMenuOpacity] = useState(0);
   const [menuHeight, setMenuHeight] = useState(100);
 
@@ -251,7 +257,7 @@ export default function Login({ state, setState }) {
             placeholder="Adgangskode..."
           />
 
-          <GoogleAuth props={state} />
+          <GoogleAuth state={state} setNewAccount={setNewAccount} />
 
           <TouchableOpacity
             style={{ width: "100%", position: "relative", left: "10%" }}
