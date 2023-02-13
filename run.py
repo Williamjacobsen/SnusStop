@@ -11,22 +11,22 @@ def locateElement(xpath):
 
 def json_checker():
     try: 
-        f = open("env.json", "r")
+        f = open("./frontend/env.json", "r")
         f.close()
     except IOError as e: 
         print(e)
         print("\nCreating file 'env.json' in current directory")
-        os.system("type nul > env.json") 
+        os.system("type nul > ./frontend/env.json") 
         print("'env.json' successfully created\n")
     
     isEmptyFile = False
-    with open("env.json", "r") as f:
+    with open("./frontend/env.json", "r") as f:
         if f.read() == "": 
             print("Formatting 'env.json'")
             isEmptyFile = True
         f.close()
     if isEmptyFile:
-        with open("env.json", "w") as f:
+        with open("./frontend/env.json", "w") as f:
             json.dump(json.loads("""{"NgrokURL": ""}"""), f, indent=4) 
             print("Succesfully formatted 'env.json'\n")
             f.close()
