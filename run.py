@@ -32,13 +32,13 @@ def json_checker():
             f.close()
 
 def save_to_json(URL: str):
-    with open("env.json", "r") as f:
+    with open("./frontend/env.json", "r") as f:
         print("\nSaving to 'env.json'")
         data = json.loads(f.read())
         data["NgrokURL"] = URL
         f.close()
 
-    with open("env.json", "w") as f:
+    with open("./frontend/env.json", "w") as f:
         json.dump(data, f, indent=4)
         print("Succesfully saved NgrokURL to 'env.json'\n")
         f.close()
