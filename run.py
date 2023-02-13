@@ -92,3 +92,10 @@ if __name__ == '__main__':
     json_checker()
     save_to_json(URL)
 
+    print("Starting frontend - expo")
+    os.system('start cmd /k "cd frontend & npx expo start"')
+
+    print("Starting backend - server.js")
+    os.system('start cmd /k "cd backend & npm start"')
+    os.system("exit")
+
