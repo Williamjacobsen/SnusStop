@@ -25,7 +25,7 @@ const db = mysql.createConnection({
   database: "snusstop",
 });
 
-const createAccount = (req, userExists) => {
+const createAccount = (req, res, userExists) => {
   if (!userExists && req.body.id) {
     db.query(
       `INSERT INTO accounts (google_id, email, verified_email, name, given_name, family_name, picture, locale) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
@@ -52,24 +52,63 @@ const createAccount = (req, userExists) => {
   }
 };
 
-app.post("/signIn", (req, res) => {
+app.post("/Google", (req, res) => {
   let userExists = false;
+  if (req.body.id) {
+    db.query(
+      `SELECT * FROM accounts WHERE google_id = ${req.body.id}`,
+      (err, result) => {
+        if (err) {
+          console.error(err);
+          res.send({ status: "failure", message: null });
+        } else if (result[0]) {
+          userExists = true;
+          console.log(`Account already exists with google_id ${req.body.id}`);
+          res.send({ status: "success", message: "loggedIn" });
+        } else {
+          createAccount(req, res, userExists);
+        }
+      }
+    );
+  }
+});
+
+const insertUserData = (req, res) => {
   db.query(
-    `SELECT * FROM accounts WHERE google_id = ${req.body.id}`,
+    `UPDATE accounts SET money_per_week = ?, times_per_day = ?, program_type = ? WHERE google_id = '${req.body.googleID}'`,
+    [
+      parseInt(req.body.ugenligSnusOmkostninger),
+      parseInt(req.body.snusPerDag),
+      req.body.programType,
+    ],
     (err, result) => {
       if (err) {
         console.error(err);
         res.send({ status: "failure", message: null });
-      }
-      if (result[0]) {
-        userExists = true;
-        console.log(`Account already exists with google_id ${req.body.id}`);
-        res.send({ status: "success", message: "loggedIn" });
       } else {
-        createAccount(req, userExists);
+        console.log(
+          `Successfully inserted user data into account google_id = ${req.body.googleID}`
+        );
+        res.send({ status: "success", message: "UserDataInserted" });
       }
     }
   );
+};
+
+app.post("/UserData", (req, res) => {
+  if (req.body.googleID) {
+    db.query(
+      `SELECT * FROM accounts WHERE google_id = ${req.body.googleID}`,
+      (err, result) => {
+        if (err) {
+          console.error(err);
+          res.send({ status: "failure", message: null });
+        } else {
+          insertUserData(req, res);
+        }
+      }
+    );
+  }
 });
 
 app.listen(5000, () => console.log(`Server listening on port 5000...`));
