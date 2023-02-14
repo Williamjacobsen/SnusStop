@@ -9,7 +9,6 @@ import {
 import { useState, useEffect } from "react";
 import { theme, styles } from "./../utils/style.js";
 import React from "react";
-import * as Google from "expo-auth-session/providers/google";
 import backendURL from "./../env.json";
 
 const closeBtnPath = require("./../assets/close.png");
@@ -39,9 +38,13 @@ const UserIcon = React.memo(function () {
   );
 });
 
-export default function Signup({ state, setState, newAccount, setNewAccount }) {
+export default function Signup({ state, setState, googleID, setIsAuth }) {
   const [menuOpacity, setMenuOpacity] = useState(0);
   const [menuHeight, setMenuHeight] = useState(100);
+
+  const [ugenligSnusOmkostninger, setUgenligSnusOmkostninger] = useState(null);
+  const [snusPerDag, setSnusPerDag] = useState(null);
+  const [programType, setProgramType] = useState(null);
 
   useEffect(() => {
     if (state) {
@@ -53,6 +56,29 @@ export default function Signup({ state, setState, newAccount, setNewAccount }) {
       setMenuHeight(0);
     }
   }, [state]);
+
+  const postUserData = () => {
+    fetch(`${backendURL.NgrokURL}/UserData`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({
+        googleID: googleID,
+        ugenligSnusOmkostninger: ugenligSnusOmkostninger,
+        snusPerDag: snusPerDag,
+        programType: programType,
+      }),
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        console.log(res);
+        if (res.status === "success") {
+          setIsAuth(true);
+        }
+      });
+  };
 
   const Background = () => {
     return (
@@ -142,16 +168,17 @@ export default function Signup({ state, setState, newAccount, setNewAccount }) {
                   },
                 ]}
                 placeholder="Penge..."
+                onChangeText={(e) => setUgenligSnusOmkostninger(e)}
               />
               <Text
                 style={{
                   fontSize: "16px",
                   position: "relative",
                   top: 10,
-                  left: -40,
+                  left: -70,
                 }}
               >
-                Hvor afhængig? (1-10):
+                Snus per dag:
               </Text>
               <TextInput
                 style={[
@@ -162,7 +189,8 @@ export default function Signup({ state, setState, newAccount, setNewAccount }) {
                     fontSize: "16px",
                   },
                 ]}
-                placeholder="1-10..."
+                placeholder="1234..."
+                onChangeText={(e) => setSnusPerDag(e)}
               />
               <Text
                 style={{
@@ -187,6 +215,7 @@ export default function Signup({ state, setState, newAccount, setNewAccount }) {
                     marginRight: "40%",
                   },
                 ]}
+                onPress={() => setProgramType("Lineær")}
               >
                 <Text style={{ fontSize: 18 }}>Lineær</Text>
               </TouchableOpacity>
@@ -203,6 +232,7 @@ export default function Signup({ state, setState, newAccount, setNewAccount }) {
                     marginRight: "-40%",
                   },
                 ]}
+                onPress={() => setProgramType("Eksponentiel")}
               >
                 <Text style={{ fontSize: 18 }}>Eksponentiel</Text>
               </TouchableOpacity>
@@ -215,6 +245,7 @@ export default function Signup({ state, setState, newAccount, setNewAccount }) {
               styles.btn,
               { height: "10%", width: "80%", marginTop: "7.5%" },
             ]}
+            onPress={() => postUserData()}
           >
             <Text style={{ fontSize: 20 }}>Signup</Text>
           </TouchableOpacity>
@@ -235,7 +266,7 @@ export default function Signup({ state, setState, newAccount, setNewAccount }) {
       }}
     >
       <Background />
-      <Foreground />
+      {Foreground()}
     </View>
   );
 }

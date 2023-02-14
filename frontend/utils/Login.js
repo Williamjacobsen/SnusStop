@@ -40,7 +40,7 @@ const UserIcon = React.memo(function () {
   );
 });
 
-const GoogleAuth = function ({ state, setNewAccount }) {
+const GoogleAuth = function ({ state, setNewAccount, setGoogleID, setIsAuth }) {
   const NgrokURL = backendURL.NgrokURL;
 
   const [accessToken, setAccessToken] = React.useState(null);
@@ -68,7 +68,6 @@ const GoogleAuth = function ({ state, setNewAccount }) {
         { headers: { Authorization: `Bearer ${accessToken}` } }
       );
       userInfoResponse.json().then((data) => {
-        console.log(data);
         setUserInfo(data);
       });
     }
@@ -82,8 +81,7 @@ const GoogleAuth = function ({ state, setNewAccount }) {
 
   React.useEffect(() => {
     if (userInfo) {
-      console.log("Signing into backend...");
-      fetch(`${NgrokURL}/signIn`, {
+      fetch(`${NgrokURL}/Google`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -91,11 +89,15 @@ const GoogleAuth = function ({ state, setNewAccount }) {
         },
         body: JSON.stringify(userInfo),
       })
-        .then((data) => data.json())
-        .then((data) => {
-          console.log(data);
-          if (data.message === "newAccountCreated") {
+        .then((res) => res.json())
+        .then((res) => {
+          console.log(res);
+          setGoogleID(userInfo.id);
+          if (res.message === "newAccountCreated") {
             setNewAccount(true);
+          }
+          if (res.message === "loggedIn") {
+            setIsAuth(true);
           }
         })
         .catch((err) => console.error(err));
@@ -142,7 +144,13 @@ const GoogleAuth = function ({ state, setNewAccount }) {
   );
 };
 
-export default function Login({ state, setState, setNewAccount }) {
+export default function Login({
+  state,
+  setState,
+  setNewAccount,
+  setGoogleID,
+  setIsAuth,
+}) {
   const [menuOpacity, setMenuOpacity] = useState(0);
   const [menuHeight, setMenuHeight] = useState(100);
 
@@ -257,7 +265,12 @@ export default function Login({ state, setState, setNewAccount }) {
             placeholder="Adgangskode..."
           />
 
-          <GoogleAuth state={state} setNewAccount={setNewAccount} />
+          <GoogleAuth
+            state={state}
+            setNewAccount={setNewAccount}
+            setGoogleID={setGoogleID}
+            setIsAuth={setIsAuth}
+          />
 
           <TouchableOpacity
             style={{ width: "100%", position: "relative", left: "10%" }}

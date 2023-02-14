@@ -12,7 +12,8 @@ import BurgerMenu from "./../utils/BurgerMenu.js";
 import Login from "./../utils/Login.js";
 import Signup from "./../utils/Signup.js";
 
-export default function LandingPage() {
+export default function LandingPage({ setIsAuth }) {
+  const [googleID, setGoogleID] = useState(null);
   const [newAccount, setNewAccount] = useState(false);
 
   const [menu, setMenu] = useState(false);
@@ -24,9 +25,11 @@ export default function LandingPage() {
   }, [menu, login, signup]);
 
   useEffect(() => {
-    setMenu(false);
-    setLogin(false);
-    setSignup(true);
+    if (newAccount) {
+      setMenu(false);
+      setLogin(false);
+      setSignup(true);
+    }
   }, [newAccount]);
 
   return (
@@ -106,13 +109,15 @@ export default function LandingPage() {
           state={login}
           setState={setLogin}
           setNewAccount={setNewAccount}
+          setGoogleID={setGoogleID}
+          setIsAuth={setIsAuth}
         />
       )}
       <Signup
         state={signup}
         setState={setSignup}
-        newAccount={newAccount}
-        setNewAccount={setNewAccount}
+        googleID={googleID}
+        setIsAuth={setIsAuth}
       />
 
       <View

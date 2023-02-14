@@ -11,5 +11,7 @@ import { useState, useEffect } from "react";
 import LandingPage from "./pages/LandingPage.js";
 
 export default function App() {
-  return <LandingPage />;
+  const [isAuth, setIsAuth] = useState(false);
+
+  return <LandingPage setIsAuth={setIsAuth} />;
 }
