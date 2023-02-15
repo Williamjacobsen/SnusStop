@@ -15,8 +15,11 @@ def json_checker():
         f.close()
     except IOError as e: 
         print(e)
-        print("\nCreating file 'env.json' in current directory")
-        os.system("type nul > ./frontend/env.json") 
+        print("\nCreating file 'env.json' in ./frontend/ directory")
+        if os.name == "nt":
+            os.system("type nul > ./frontend/env.json") 
+        else:
+            os.system("touch ./frontend/env.json")
         print("'env.json' successfully created\n")
     
     isEmptyFile = False
@@ -97,5 +100,4 @@ if __name__ == '__main__':
 
     print("Starting backend - server.js")
     os.system('start cmd /k "cd backend & npm start"')
-    os.system("exit")
 
