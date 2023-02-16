@@ -75,32 +75,40 @@ const insertUserData = (req, res) => {
   );
 };
 
-const doesAccountExist = (googleID) => {
-  const foundAccount = new Promise((resolve, reject) => {
+const doesAccountExist = async (googleID) => {
+  return new Promise((resolve, reject) => {
+    if (!googleID) return reject(new Error("No google_id specified..."));
     db.query(
       `SELECT * FROM accounts WHERE google_id = ${googleID}`,
       (err, result) => {
         if (err) {
           console.error(err);
-          res.send({ status: "failure", message: null });
-          reject(false);
-        } else {
-          resolve(true);
+        } else if (result[0]) {
+          console.log(result);
+          return resolve("Successfully found account");
         }
+        reject(new Error(`No account exists with google_id = ${googleID}`));
       }
     );
-  });
-  return foundAccount;
+  })
+    .then(() => {
+      return true;
+    })
+    .catch(() => {
+      return false;
+    });
 };
 
-app.post("/Google", async (req, res) => {
+app.post("/Google", (req, res) => {
   if (req.body?.id) {
-    if (doesAccountExist(req.body.id)) {
-      console.log(`Account already exists with google_id ${req.body.id}`);
-      res.send({ status: "success", message: "loggedIn" });
-    } else {
+    doesAccountExist(req.body.id).then((result) => {
+      if (result) {
+        console.log(`Account already exists with google_id = ${req.body.id}`);
+        res.send({ status: "success", message: "loggedIn" });
+        return;
+      }
       createAccount(req, res);
-    }
+    });
   }
 });
 
@@ -108,15 +116,27 @@ app.post("/UserData", (req, res) => {
   if (!req.body?.googleID) {
     return;
   }
-
-  if (doesAccountExist(req.body.googleID)) {
-    insertUserData(req, res);
-  } else {
+  doesAccountExist(req.body.id).then((result) => {
+    if (result) {
+      insertUserData(req, res);
+      return;
+    }
     console.log(
       `Account does not exist where google_id = ${req.body.googleID}`
     );
     res.send({ status: "failure", message: null });
-  }
+  });
+});
+
+app.post("/updateAntalSnusIDag", (req, res) => {
+  console.log(req.body);
+  doesAccountExist(req.body.id).then((result) => {
+    if (result) {
+      res.send({ status: "success", message: null });
+      return;
+    }
+    res.send({ status: "failure", message: null });
+  });
 });
 
 app.listen(5000, () => console.log(`Server listening on port 5000...`));
