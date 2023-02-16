@@ -25,10 +25,10 @@ const db = mysql.createConnection({
   database: "snusstop",
 });
 
-const createAccount = (req, res, userExists) => {
-  if (!userExists && req.body.id) {
+const createAccount = (req, res) => {
+  if (req.body.id) {
     db.query(
-      `INSERT INTO accounts (google_id, email, verified_email, name, given_name, family_name, picture, locale, password) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO accounts (google_id, email, verified_email, name, given_name, family_name, picture, locale, password) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         req.body?.id ? req.body.id : null,
         req.body?.email ? req.body.email : null,
@@ -76,30 +76,31 @@ const insertUserData = (req, res) => {
 };
 
 const doesAccountExist = (googleID) => {
-  db.query(
-    `SELECT * FROM accounts WHERE google_id = ${googleID}`,
-    (err, result) => {
-      if (err) {
-        console.error(err);
-        res.send({ status: "failure", message: null });
-        return false;
-      } else {
-        return true;
+  const foundAccount = new Promise((resolve, reject) => {
+    db.query(
+      `SELECT * FROM accounts WHERE google_id = ${googleID}`,
+      (err, result) => {
+        if (err) {
+          console.error(err);
+          res.send({ status: "failure", message: null });
+          reject(false);
+        } else {
+          resolve(true);
+        }
       }
-    }
-  );
+    );
+  });
+  return foundAccount;
 };
 
-app.post("/Google", (req, res) => {
-  let userExists = false;
+app.post("/Google", async (req, res) => {
   if (req.body?.id) {
     if (doesAccountExist(req.body.id)) {
-      userExists = true;
       console.log(`Account already exists with google_id ${req.body.id}`);
       res.send({ status: "success", message: "loggedIn" });
-      return;
+    } else {
+      createAccount(req, res);
     }
-    createAccount(req, res, userExists);
   }
 });
 
