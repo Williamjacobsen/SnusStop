@@ -38,7 +38,15 @@ const UserIcon = React.memo(function () {
   );
 });
 
-export default function Signup({ state, setState, googleID, setIsAuth }) {
+export default function Signup({
+  state,
+  setState,
+  googleID,
+  setIsAuth,
+  userInfo,
+}) {
+  // todo: display userInfo pic & userInfo name
+
   const [menuOpacity, setMenuOpacity] = useState(0);
   const [menuHeight, setMenuHeight] = useState(100);
 

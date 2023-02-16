@@ -12,7 +12,7 @@ import BurgerMenu from "./../utils/BurgerMenu.js";
 import Login from "./../utils/Login.js";
 import Signup from "./../utils/Signup.js";
 
-export default function LandingPage({ setIsAuth }) {
+export default function LandingPage({ setIsAuth, userInfo, setUserInfo }) {
   const [googleID, setGoogleID] = useState(null);
   const [newAccount, setNewAccount] = useState(false);
 
@@ -111,6 +111,8 @@ export default function LandingPage({ setIsAuth }) {
           setNewAccount={setNewAccount}
           setGoogleID={setGoogleID}
           setIsAuth={setIsAuth}
+          userInfo={userInfo}
+          setUserInfo={setUserInfo}
         />
       )}
       <Signup
@@ -118,6 +120,7 @@ export default function LandingPage({ setIsAuth }) {
         setState={setSignup}
         googleID={googleID}
         setIsAuth={setIsAuth}
+        userInfo={userInfo}
       />
 
       <View

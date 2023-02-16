@@ -10,11 +10,16 @@ import React from "react";
 import { theme, styles } from "./../utils/style.js";
 import BurgerMenu from "./../utils/BurgerMenu.js";
 
-export default function MainPage() {
+export default function MainPage({ userInfo }) {
   const [menu, setMenu] = React.useState(false);
   const [home, setHome] = React.useState(true);
   const [statistics, setStatistics] = React.useState(false);
 
+  const [forventetAntalSnus, setForventetAntalSnus] = React.useState(0);
+  const [totalAntalSnus, setTotalAntalSnus] = React.useState(0);
+
+  const [streak, setStreak] = React.useState(0);
+  const [pengeSparet, setPengeSparet] = React.useState(0);
   const [antalSnusIDag, setAntalSnusIDag] = React.useState(0);
 
   React.useEffect(() => {
@@ -103,7 +108,7 @@ export default function MainPage() {
             >
               <Text
                 style={{
-                  marginTop: 25,
+                  marginTop: "-15%",
                   fontSize: 30,
                   textAlign: "center",
                   fontWeight: "700",
@@ -120,7 +125,7 @@ export default function MainPage() {
                   opacity: 0.5,
                 }}
               >
-                28 Dage
+                {streak} Dage
               </Text>
               <Text
                 style={{
@@ -141,7 +146,7 @@ export default function MainPage() {
                   opacity: 0.5,
                 }}
               >
-                399.- Kr
+                {pengeSparet}.- Kr
               </Text>
               <Text
                 style={{
@@ -162,7 +167,7 @@ export default function MainPage() {
                   opacity: 0.5,
                 }}
               >
-                63 Stk. Snus
+                {forventetAntalSnus - totalAntalSnus} Stk. Snus
               </Text>
               <Text
                 style={{

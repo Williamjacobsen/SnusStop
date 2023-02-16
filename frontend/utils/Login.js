@@ -40,11 +40,17 @@ const UserIcon = React.memo(function () {
   );
 });
 
-const GoogleAuth = function ({ state, setNewAccount, setGoogleID, setIsAuth }) {
+const GoogleAuth = function ({
+  state,
+  setNewAccount,
+  setGoogleID,
+  setIsAuth,
+  userInfo,
+  setUserInfo,
+}) {
   const NgrokURL = backendURL.NgrokURL;
 
   const [accessToken, setAccessToken] = React.useState(null);
-  const [userInfo, setUserInfo] = React.useState(null);
 
   const [request, response, promptAsync] = Google.useAuthRequest({
     clientId:
@@ -150,6 +156,8 @@ export default function Login({
   setNewAccount,
   setGoogleID,
   setIsAuth,
+  userInfo,
+  setUserInfo,
 }) {
   const [menuOpacity, setMenuOpacity] = useState(0);
   const [menuHeight, setMenuHeight] = useState(100);
@@ -270,6 +278,8 @@ export default function Login({
             setNewAccount={setNewAccount}
             setGoogleID={setGoogleID}
             setIsAuth={setIsAuth}
+            userInfo={userInfo}
+            setUserInfo={setUserInfo}
           />
 
           <TouchableOpacity
