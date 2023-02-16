@@ -42,6 +42,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
         > streak
         > streak_last_date
         > money_saved
+        > last_date_modified
 
       > datapoints
       -- Attributes --
@@ -57,6 +58,10 @@ const db = mysql.createConnection({
   password: "password",
   database: "snusstop",
 });
+
+const getDate = () => {
+  return new Date().toDateString();
+};
 
 const createAccount = (req, res) => {
   if (req.body.id) {
@@ -131,8 +136,26 @@ const doesAccountExist = async (googleID) => {
     });
 };
 
-const updateAccountValue = (id, db_attribute, newValue) => {
-  console.log(id);
+const updateValue = (id, table, db_attribute, newValue) => {
+  if (!id || !table || !db_attribute || !newValue)
+    return "Missing param value...";
+  return new Promise((resolve, reject) => {
+    db.query(
+      `UPDATE ${table} SET ${db_attribute} = ${newValue} WHERE id = ${id}`,
+      (err, result) => {
+        if (err) return reject(false) || console.error(err);
+        return resolve(result);
+      }
+    );
+  });
+};
+
+const handleUpdateValue = (res, account_id, table, db_attribute, newValue) => {
+  return updateValue(account_id, table, db_attribute, newValue).then(
+    (result) => {
+      if (!result) res.send({ status: "failure", message: null });
+    }
+  );
 };
 
 const getAccountValues = (id, google_id) => {
@@ -154,16 +177,15 @@ const getAccountValues = (id, google_id) => {
 };
 
 app.post("/Google", (req, res) => {
-  if (req.body?.id) {
-    doesAccountExist(req.body.id).then((result) => {
-      if (result) {
-        console.log(`Account already exists with google_id = ${req.body.id}`);
-        res.send({ status: "success", message: "loggedIn" });
-        return;
-      }
-      createAccount(req, res);
-    });
-  }
+  if (!req.body?.id) return;
+  doesAccountExist(req.body.id).then((result) => {
+    if (result) {
+      console.log(`Account already exists with google_id = ${req.body.id}`);
+      res.send({ status: "success", message: "loggedIn" });
+      return;
+    }
+    createAccount(req, res);
+  });
 });
 
 app.post("/UserData", (req, res) => {
@@ -185,22 +207,54 @@ app.post("/UserData", (req, res) => {
 app.post("/updateAntalSnusIDag", (req, res) => {
   console.log(req.body);
   doesAccountExist(req.body.userInfo.id).then((result) => {
-    if (result) {
-      let account_id = null;
-      getAccountValues(false, req.body.userInfo.id)
-        .then((result) => {
-          if (result) {
-            return (account_id = result.id);
-          }
-          res.send({ status: "failure", message: null });
-        })
-        .then(() => {
-          updateAccountValue(account_id, null, null);
+    if (!result) res.send({ status: "failure", message: null });
+    getAccountValues(false, req.body.userInfo.id)
+      .then((result) => {
+        if (result)
+          return {
+            id: result.id,
+            antalSnusIDag: result.current_snus_amount,
+            total_snus_amount: result.total_snus_amount,
+            last_date_modified: result.last_date_modified,
+          };
+        res.send({ status: "failure", message: null });
+      })
+      .then((result) => {
+        console.log(result);
+        handleUpdateValue(
+          res,
+          result.id,
+          "accounts",
+          "current_snus_amount",
+          req.body.antalSnusIDag
+        );
+        handleUpdateValue(
+          res,
+          result.id,
+          "accounts",
+          "total_snus_amount",
+          result.last_date_modified != getDate()
+            ? result.total_snus_amount + 1
+            : req.body.antalSnusIDag > result.antalSnusIDag
+            ? result.total_snus_amount + 1
+            : req.body.antalSnusIDag == result.antalSnusIDag
+            ? result.total_snus_amount
+            : result.total_snus_amount - 1
+        );
+        handleUpdateValue(
+          res,
+          result.id,
+          "accounts",
+          "last_date_modified",
+          `'${getDate()}'`
+        );
+      })
+      .then(() => {
+        res.send({
+          status: "success",
+          message: "Successfully updated database",
         });
-      res.send({ status: "success", message: null });
-    } else {
-      res.send({ status: "failure", message: null });
-    }
+      });
   });
 });
 
