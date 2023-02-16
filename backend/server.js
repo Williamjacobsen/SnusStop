@@ -18,6 +18,39 @@ app.use(
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
+/*
+  -- Database --
+    > snusstop
+    -- Tables --
+      > accounts
+      -- Attributes --
+        > id
+        > google_id
+        > email
+        > verified_email
+        > name
+        > given_name
+        > family_name
+        > picture
+        > locale
+        > password
+        > money_per_week
+        > times_per_day
+        > program_type
+        > current_snus_amount
+        > total_snus_amount
+        > streak
+        > streak_last_date
+        > money_saved
+
+      > datapoints
+      -- Attributes --
+        > id
+        > account_id
+        > date
+        > amount
+*/
+
 const db = mysql.createConnection({
   user: "root",
   host: "localhost",
@@ -84,7 +117,6 @@ const doesAccountExist = async (googleID) => {
         if (err) {
           console.error(err);
         } else if (result[0]) {
-          console.log(result);
           return resolve("Successfully found account");
         }
         reject(new Error(`No account exists with google_id = ${googleID}`));
@@ -97,6 +129,28 @@ const doesAccountExist = async (googleID) => {
     .catch(() => {
       return false;
     });
+};
+
+const updateAccountValue = (id, db_attribute, newValue) => {
+  console.log(id);
+};
+
+const getAccountValues = (id, google_id) => {
+  if (id || google_id) {
+    return new Promise((resolve, reject) => {
+      db.query(
+        `SELECT * FROM accounts WHERE ${id ? "id" : "google_id"} = ${
+          id ? id : google_id
+        }`,
+        (err, result) => {
+          if (result[0]) {
+            return resolve(result[0]);
+          }
+          reject(false);
+        }
+      );
+    });
+  }
 };
 
 app.post("/Google", (req, res) => {
@@ -130,12 +184,23 @@ app.post("/UserData", (req, res) => {
 
 app.post("/updateAntalSnusIDag", (req, res) => {
   console.log(req.body);
-  doesAccountExist(req.body.id).then((result) => {
+  doesAccountExist(req.body.userInfo.id).then((result) => {
     if (result) {
+      let account_id = null;
+      getAccountValues(false, req.body.userInfo.id)
+        .then((result) => {
+          if (result) {
+            return (account_id = result.id);
+          }
+          res.send({ status: "failure", message: null });
+        })
+        .then(() => {
+          updateAccountValue(account_id, null, null);
+        });
       res.send({ status: "success", message: null });
-      return;
+    } else {
+      res.send({ status: "failure", message: null });
     }
-    res.send({ status: "failure", message: null });
   });
 });
 
