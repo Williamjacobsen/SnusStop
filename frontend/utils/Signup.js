@@ -44,6 +44,7 @@ export default function Signup({
   googleID,
   setIsAuth,
   userInfo,
+  setInsertedUserInfo,
 }) {
   // todo: display userInfo pic & userInfo name
 
@@ -84,6 +85,7 @@ export default function Signup({
         console.log(res);
         if (res.status === "success") {
           setIsAuth(true);
+          setInsertedUserInfo(true);
         }
       });
   };

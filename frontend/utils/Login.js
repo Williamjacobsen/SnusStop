@@ -47,6 +47,7 @@ const GoogleAuth = function ({
   setIsAuth,
   userInfo,
   setUserInfo,
+  setInsertedUserInfo,
 }) {
   const NgrokURL = backendURL.NgrokURL;
 
@@ -101,6 +102,8 @@ const GoogleAuth = function ({
           setGoogleID(userInfo.id);
           if (res.message === "newAccountCreated") {
             setNewAccount(true);
+          } else {
+            setInsertedUserInfo(true);
           }
           if (res.message === "loggedIn") {
             setIsAuth(true);
@@ -158,6 +161,7 @@ export default function Login({
   setIsAuth,
   userInfo,
   setUserInfo,
+  setInsertedUserInfo,
 }) {
   const [menuOpacity, setMenuOpacity] = useState(0);
   const [menuHeight, setMenuHeight] = useState(100);
@@ -280,6 +284,7 @@ export default function Login({
             setIsAuth={setIsAuth}
             userInfo={userInfo}
             setUserInfo={setUserInfo}
+            setInsertedUserInfo={setInsertedUserInfo}
           />
 
           <TouchableOpacity

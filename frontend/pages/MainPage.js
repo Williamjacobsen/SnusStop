@@ -9,6 +9,7 @@ import {
 import React from "react";
 import { theme, styles } from "./../utils/style.js";
 import BurgerMenu from "./../utils/BurgerMenu.js";
+import backendURL from "./../env.json";
 
 export default function MainPage({ userInfo }) {
   const [menu, setMenu] = React.useState(false);
@@ -27,6 +28,31 @@ export default function MainPage({ userInfo }) {
       `\nmenu : ${menu}\nhome : ${home}\nstatistics : ${statistics}\n`
     );
   }, [menu, home, statistics]);
+
+  React.useEffect(() => {
+    console.log(`antalSnusIDag ${antalSnusIDag}`);
+    try {
+      fetch(`${backendURL.NgrokURL}/updateAntalSnusIDag`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          antalSnusIDag: antalSnusIDag,
+          userInfo: userInfo,
+        }),
+      })
+        .then((res) => res.json())
+        .then((res) => {
+          console.log(res);
+          if (res.status === "success") {
+          }
+        });
+    } catch (err) {
+      console.error(err);
+    }
+  }, [antalSnusIDag]);
 
   return (
     <View style={styles.container}>
