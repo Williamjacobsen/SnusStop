@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
 const bcrypt = require("bcrypt");
+const os = require("os");
 
 const app = express();
 
@@ -52,10 +53,11 @@ app.use(bodyParser.urlencoded({ extended: false }));
         > amount
 */
 
+require("dotenv").config();
 const db = mysql.createConnection({
-  user: "root",
+  user: os.type() === "Linux" ? "admin" : "root",
   host: "localhost",
-  password: "password",
+  password: process.env.PASSWORD,
   database: "snusstop",
 });
 
