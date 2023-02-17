@@ -209,6 +209,37 @@ app.post("/UserData", (req, res) => {
 
 app.post("/updateAntalSnusIDag", (req, res) => {
   console.log(req.body);
+
+  let amountMatching = true;
+  if (!req.body.antalSnusIDag) {
+    getAccountValues(false, req.body.userInfo.id)
+      .then((result) => {
+        if (result.last_date_modified == getDate()) {
+          if (
+            result.current_snus_amount != null ||
+            result.current_snus_amount != undefined ||
+            result.current_snus_amount != 0
+          ) {
+            amountMatching = false;
+            res.send({
+              status: "success",
+              message: "amount not matching",
+              antalSnusIDag: result.current_snus_amount,
+            });
+            return result;
+          }
+          res.send({ status: "failure", message: null });
+        }
+      })
+      .then((result) => {
+        console.log(result);
+      });
+  }
+
+  if (!amountMatching) {
+    return;
+  }
+
   doesAccountExist(req.body.userInfo.id).then((result) => {
     if (!result) res.send({ status: "failure", message: null });
     getAccountValues(false, req.body.userInfo.id)
