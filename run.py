@@ -59,26 +59,37 @@ if __name__ == '__main__':
     import time
     import requests
     from selenium import webdriver
-    from selenium.webdriver.chrome.options import Options
     from selenium.webdriver.common.by import By
     from selenium.webdriver.support.ui import WebDriverWait
     from selenium.webdriver.support import expected_conditions as EC
     from selenium.webdriver.common.keys import Keys
-    from webdriver_manager.chrome import ChromeDriverManager
+    if os.name == "nt":
+        from webdriver_manager.chrome import ChromeDriverManager 
+        from selenium.webdriver.chrome.options import Options
+    else:
+        from selenium.webdriver.firefox.options import Options
+        from webdriver_manager.firefox import GeckoDriverManager
     from bs4 import BeautifulSoup
 
-    print("Setting up ChromeDriver...")
+    print("Setting up driver...")
     options = Options()
-    options.add_argument("--headless")
-    options.add_argument("--disable-blink-features")
-    options.add_argument("--disable-blink-features=AutomationControlled")
-    options.add_experimental_option("excludeSwitches", ["enable-automation"])
-    options.add_experimental_option('useAutomationExtension', False)
-    driver = webdriver.Chrome(ChromeDriverManager().install(), options=options)
+    if os.name == "nt":
+        options.add_argument("--headless")
+        options.add_argument("--disable-blink-features")
+        options.add_argument("--disable-blink-features=AutomationControlled")
+        options.add_experimental_option("excludeSwitches", ["enable-automation"])
+        options.add_experimental_option('useAutomationExtension', False)
+        driver = webdriver.Chrome(ChromeDriverManager().install(), options=options)
+    else:
+        options.headless = True
+        driver = webdriver.Firefox(executable_path=GeckoDriverManager().install(), options=options)
     wait = WebDriverWait(driver, 20)
 
     print("Starting Ngrok.io Server - port: 5000", end="\r")
-    os.system("start cmd /k ngrok http 5000 --host-header='localhost:5000")
+    if os.name == "nt":
+        os.system("start cmd /k ngrok http 5000 --host-header='localhost:5000")
+    else:
+        os.system("""gnome-terminal -- bash -c 'ngrok http 5000 --host-header="localhost:5000"; $SHELL'""")
 
     for i in range(1, 11):
         time.sleep(0.3)
@@ -96,8 +107,13 @@ if __name__ == '__main__':
     save_to_json(URL)
 
     print("Starting frontend - expo")
-    os.system('start cmd /k "cd frontend & npx expo start"')
+    if os.name == "nt":
+        os.system('start cmd /k "cd frontend & npx expo start"')
+    else:
+        os.system("""gnome-terminal -- bash -c 'cd frontend; npx expo start; $SHELL'""")
 
     print("Starting backend - server.js")
-    os.system('start cmd /k "cd backend & npm start"')
-
+    if os.name == "nt":
+        os.system('start cmd /k "cd backend & npm start"')
+    else:
+        os.system("""gnome-terminal -- bash -c 'cd backend; npm start; $SHELL'""")
