@@ -156,7 +156,7 @@ export default function Signup({
         ></View>
         <View style={{ height: "80%", alignItems: "center" }}>
           <UserIcon />
-          {true ? ( // chnage true to newAccount
+          {true ? ( // change true to newAccount
             <>
               <Text
                 style={{

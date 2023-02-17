@@ -13,6 +13,21 @@ import MainPage from "./pages/MainPage.js";
 
 export default function App() {
   const [isAuth, setIsAuth] = useState(false);
+  const [insertedUserInfo, setInsertedUserInfo] = useState(false);
+  const [userInfo, setUserInfo] = useState(null);
 
-  return <>{isAuth ? <MainPage /> : <LandingPage setIsAuth={setIsAuth} />}</>;
+  return (
+    <>
+      {isAuth && insertedUserInfo ? (
+        <MainPage userInfo={userInfo} />
+      ) : (
+        <LandingPage
+          setIsAuth={setIsAuth}
+          userInfo={userInfo}
+          setUserInfo={setUserInfo}
+          setInsertedUserInfo={setInsertedUserInfo}
+        />
+      )}
+    </>
+  );
 }

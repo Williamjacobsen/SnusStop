@@ -100,13 +100,12 @@ const GoogleAuth = function ({
         .then((res) => {
           console.log(res);
           setGoogleID(userInfo.id);
-          if (res.message === "newAccountCreated") {
+          if (res.message === "loggedIn") {
+            setIsAuth(true);
+          } else if (res.message === "newAccountCreated") {
             setNewAccount(true);
           } else {
             setInsertedUserInfo(true);
-          }
-          if (res.message === "loggedIn") {
-            setIsAuth(true);
           }
         })
         .catch((err) => console.error(err));
