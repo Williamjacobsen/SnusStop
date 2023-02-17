@@ -82,10 +82,10 @@ const createAccount = (req, res) => {
         if (err) {
           console.error(err);
           res.send({ status: "failure", message: null });
-        } else {
-          console.log(`Successfully created account google_id: ${req.body.id}`);
-          res.send({ status: "success", message: "newAccountCreated" });
+          return;
         }
+        console.log(`Successfully created account google_id: ${req.body.id}`);
+        res.send({ status: "success", message: "newAccountCreated" });
       }
     );
   }
@@ -151,11 +151,14 @@ const updateValue = (id, table, db_attribute, newValue) => {
 };
 
 const handleUpdateValue = (res, account_id, table, db_attribute, newValue) => {
-  return updateValue(account_id, table, db_attribute, newValue).then(
-    (result) => {
+  return updateValue(account_id, table, db_attribute, newValue)
+    .then((result) => {
       if (!result) res.send({ status: "failure", message: null });
-    }
-  );
+    })
+    .catch((err) => {
+      console.error(err);
+      res.send({ status: "failure", message: null });
+    });
 };
 
 const getAccountValues = (id, google_id) => {
@@ -226,20 +229,24 @@ app.post("/updateAntalSnusIDag", (req, res) => {
           result.id,
           "accounts",
           "current_snus_amount",
-          req.body.antalSnusIDag
+          !req.body.antalSnusIDag
+            ? `'${req.body.antalSnusIDag}'`
+            : req.body.antalSnusIDag
         );
         handleUpdateValue(
           res,
           result.id,
           "accounts",
           "total_snus_amount",
-          result.last_date_modified != getDate()
-            ? result.total_snus_amount + 1
-            : req.body.antalSnusIDag > result.antalSnusIDag
+          result.last_date_modified != getDate() &&
+            result.last_date_modified != null
+            ? `'${result.total_snus_amount}'`
+            : req.body.antalSnusIDag > result.antalSnusIDag &&
+              result.antalSnusIDag != null
             ? result.total_snus_amount + 1
             : req.body.antalSnusIDag == result.antalSnusIDag
-            ? result.total_snus_amount
-            : result.total_snus_amount - 1
+            ? `'${result.total_snus_amount}'`
+            : `'${result.total_snus_amount - 1}'`
         );
         handleUpdateValue(
           res,
