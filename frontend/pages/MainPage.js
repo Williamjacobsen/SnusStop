@@ -46,7 +46,8 @@ export default function MainPage({ userInfo }) {
         .then((res) => res.json())
         .then((res) => {
           console.log(res);
-          if (res.status === "success") {
+          if (res?.antalSnusIDag) {
+            setAntalSnusIDag(res.antalSnusIDag);
           }
         });
     } catch (err) {
