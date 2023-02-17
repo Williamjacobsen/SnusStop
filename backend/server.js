@@ -195,7 +195,7 @@ app.post("/UserData", (req, res) => {
   if (!req.body?.googleID) {
     return;
   }
-  doesAccountExist(req.body.id).then((result) => {
+  doesAccountExist(req.body.googleID).then((result) => {
     if (result) {
       insertUserData(req, res);
       return;
