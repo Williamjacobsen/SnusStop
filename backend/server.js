@@ -62,7 +62,18 @@ const db = mysql.createConnection({
 });
 
 const getDate = () => {
-  return new Date().toDateString();
+  // I HATE i18n
+  let date = new Date();
+  return {
+    year: date.getFullYear(),
+    month: date.getMonth() + 1,
+    day: date.getDate(),
+  };
+};
+
+const getStringifyedDate = () => {
+  let date = getDate();
+  return `${date.year}-${date.month}-${date.day}`;
 };
 
 const createAccount = (req, res) => {
@@ -213,10 +224,10 @@ app.post("/updateAntalSnusIDag", (req, res) => {
   console.log(req.body);
 
   let amountMatching = true;
-  if (!req.body.antalSnusIDag) {
+  if (req.body.antalSnusIDag === undefined || req.body.antalSnusIDag === null) {
     getAccountValues(false, req.body.userInfo.id)
       .then((result) => {
-        if (result.last_date_modified == getDate()) {
+        if (result.last_date_modified == getStringifyedDate()) {
           if (
             result.current_snus_amount != null ||
             result.current_snus_amount != undefined ||
@@ -271,7 +282,7 @@ app.post("/updateAntalSnusIDag", (req, res) => {
           result.id,
           "accounts",
           "total_snus_amount",
-          result.last_date_modified != getDate() &&
+          result.last_date_modified != getStringifyedDate() &&
             result.last_date_modified != null
             ? `'${result.total_snus_amount}'`
             : req.body.antalSnusIDag > result.antalSnusIDag &&
@@ -286,7 +297,7 @@ app.post("/updateAntalSnusIDag", (req, res) => {
           result.id,
           "accounts",
           "last_date_modified",
-          `'${getDate()}'`
+          `'${getStringifyedDate()}'`
         );
       })
       .then(() => {
