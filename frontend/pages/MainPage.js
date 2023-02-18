@@ -29,6 +29,30 @@ export default function MainPage({ userInfo }) {
   }, [menu, home, statistics]);
 
   React.useEffect(() => {
+    try {
+      fetch(`${backendURL.NgrokURL}/streak`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          googleID: userInfo.id,
+        }),
+      })
+        .then((res) => res.json())
+        .then((res) => {
+          console.log(res);
+          if (res?.streak) {
+            setStreak(res.streak);
+          }
+        });
+    } catch (err) {
+      console.error(err);
+    }
+  }, []);
+
+  React.useEffect(() => {
     console.log(`antalSnusIDag ${antalSnusIDag}`);
     try {
       fetch(`${backendURL.NgrokURL}/updateAntalSnusIDag`, {
