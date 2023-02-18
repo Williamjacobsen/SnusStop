@@ -62,7 +62,6 @@ const db = mysql.createConnection({
 });
 
 /**
- *
  * @returns {{year: [number, 0000], month: [number, '1-12'], day: [number, '1-31']}}
  */
 const getDate = () => {
@@ -78,13 +77,24 @@ const getDate = () => {
 /**
  * @returns {'year-month-day'}
  */
-const getStringifyedDate = () => {
-  let date = getDate();
+const stringifyedDate = (date) => {
   return `${date.year}-${date.month}-${date.day}`;
 };
 
-const getTomorrow = () => {
-  let date = getDate();
+/**
+ * @param {'stringifyedDate'} date
+ * @returns {{year: [number, 0000], month: [number, '1-12'], day: [number, '1-31']}}
+ */
+const parseDate = (date) => {
+  let obj = { year: null, month: null, day: null };
+  date = date.split("-");
+  obj.year = +date[0];
+  obj.month = +date[1];
+  obj.day = +date[2];
+  return obj;
+};
+
+const getTomorrow = (date) => {
   if (date.day === 31) {
     date.day = 1;
     date.month += 1;
@@ -188,11 +198,11 @@ const updateValue = (id, table, db_attribute, newValue) => {
 const handleUpdateValue = (res, account_id, table, db_attribute, newValue) => {
   return updateValue(account_id, table, db_attribute, newValue)
     .then((result) => {
-      if (!result) res.send({ status: "failure", message: null });
+      if (!result) res.send({ status: "failure", message: err });
     })
     .catch((err) => {
       console.error(err);
-      res.send({ status: "failure", message: null });
+      res.send({ status: "failure", message: err });
     });
 };
 
@@ -288,14 +298,48 @@ app.post("/UserData", (req, res) => {
   });
 });
 
+app.post("/streak", (req, res) => {
+  if (req.body?.googleID) {
+    getAccountValues(null, req.body.googleID)
+      .then((values) => {
+        if (
+          stringifyedDate(getTomorrow(parseDate(values.last_date_modified))) ===
+          stringifyedDate(getDate())
+        ) {
+          values.streak = values.streak + 1;
+          return values;
+        }
+        return values;
+      })
+      .then((values) => {
+        if (!values.streak) {
+          res.send({ status: "failure", message: null });
+          return false;
+        }
+        handleUpdateValue(res, values.id, "accounts", "streak", values.streak);
+        return values.streak;
+      })
+      .then((streak) => {
+        if (streak) {
+          res.send({
+            status: "success",
+            message: "streak",
+            streak: streak,
+          });
+        }
+      });
+  }
+});
+
 app.post("/updateAntalSnusIDag", (req, res) => {
   console.log(req.body);
 
+  // new function called getAntalSnusIDag - maybe
   let amountMatching = true;
-  if (req.body.antalSnusIDag === undefined || req.body.antalSnusIDag === null) {
+  if (!req.body?.antalSnusIDag) {
     getAccountValues(false, req.body.userInfo.id)
       .then((result) => {
-        if (result.last_date_modified == getStringifyedDate()) {
+        if (result.last_date_modified == stringifyedDate(getDate())) {
           if (
             result.current_snus_amount != null ||
             result.current_snus_amount != undefined ||
@@ -311,7 +355,6 @@ app.post("/updateAntalSnusIDag", (req, res) => {
             });
             return result;
           }
-          res.send({ status: "failure", message: null });
         }
       })
       .then((result) => {
@@ -320,6 +363,7 @@ app.post("/updateAntalSnusIDag", (req, res) => {
   }
 
   if (!amountMatching) {
+    res.send({ status: "failure", message: null });
     return;
   }
 
@@ -353,7 +397,7 @@ app.post("/updateAntalSnusIDag", (req, res) => {
           result.id,
           "accounts",
           "total_snus_amount",
-          result.last_date_modified != getStringifyedDate() &&
+          result.last_date_modified != stringifyedDate(getDate()) &&
             result.last_date_modified != null
             ? `'${result.total_snus_amount}'`
             : req.body.antalSnusIDag > result.antalSnusIDag &&
@@ -368,11 +412,9 @@ app.post("/updateAntalSnusIDag", (req, res) => {
           result.id,
           "accounts",
           "last_date_modified",
-          `'${getStringifyedDate()}'`
+          `'${stringifyedDate(getDate())}'`
         );
-        return result;
-      })
-      .then((result) => {
+
         res.send({
           status: "success",
           message: "Successfully updated database",
