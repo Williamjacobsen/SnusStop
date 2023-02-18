@@ -61,6 +61,10 @@ const db = mysql.createConnection({
   database: "snusstop",
 });
 
+/**
+ *
+ * @returns {{year: [number, 0000], month: [number, '1-12'], day: [number, '1-31']}}
+ */
 const getDate = () => {
   // I HATE i18n
   let date = new Date();
@@ -77,6 +81,21 @@ const getDate = () => {
 const getStringifyedDate = () => {
   let date = getDate();
   return `${date.year}-${date.month}-${date.day}`;
+};
+
+const getTomorrow = () => {
+  let date = getDate();
+  if (date.day === 31) {
+    date.day = 1;
+    date.month += 1;
+  } else if (date.month === 12) {
+    date.day = 1;
+    date.month = 1;
+    date.year += 1;
+  } else {
+    date.day += 1;
+  }
+  return date;
 };
 
 const createAccount = (req, res) => {
