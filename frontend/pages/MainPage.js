@@ -16,8 +16,7 @@ export default function MainPage({ userInfo }) {
   const [home, setHome] = React.useState(true);
   const [statistics, setStatistics] = React.useState(false);
 
-  const [forventetAntalSnus, setForventetAntalSnus] = React.useState(0);
-  const [totalAntalSnus, setTotalAntalSnus] = React.useState(0);
+  const [nedsatAntalSnus, setNedsatAntalSnus] = React.useState(0);
 
   const [streak, setStreak] = React.useState(0);
   const [pengeSparet, setPengeSparet] = React.useState(0);
@@ -47,7 +46,11 @@ export default function MainPage({ userInfo }) {
         .then((res) => {
           console.log(res);
           if (res?.antalSnusIDag) {
+            // if just logged in
             setAntalSnusIDag(res.antalSnusIDag);
+          }
+          if (res?.nedsatAntalSnus) {
+            setNedsatAntalSnus(res.nedsatAntalSnus);
           }
         });
     } catch (err) {
@@ -184,7 +187,7 @@ export default function MainPage({ userInfo }) {
                   color: theme.lightBlue,
                 }}
               >
-                NEDSAT ANTAL SNUS
+                NEDSAT ANTAL SNUS{"\n"} I DAG
               </Text>
               <Text
                 style={{
@@ -194,7 +197,7 @@ export default function MainPage({ userInfo }) {
                   opacity: 0.5,
                 }}
               >
-                {forventetAntalSnus - totalAntalSnus} Stk. Snus
+                {nedsatAntalSnus} Stk. Snus
               </Text>
               <Text
                 style={{
