@@ -71,6 +71,9 @@ const getDate = () => {
   };
 };
 
+/**
+ * @returns {'year-month-day'}
+ */
 const getStringifyedDate = () => {
   let date = getDate();
   return `${date.year}-${date.month}-${date.day}`;
@@ -174,6 +177,52 @@ const handleUpdateValue = (res, account_id, table, db_attribute, newValue) => {
     });
 };
 
+/**
+ *
+ * @param {Number} id
+ * @param {String} google_id
+ * @returns
+ *
+ * id
+ *
+ * google_id
+ *
+ * email
+ *
+ * verified_email
+ *
+ * name
+ *
+ * given_name
+ *
+ * family_name
+ *
+ * picture
+ *
+ * locale
+ *
+ * password
+ *
+ * money_per_week
+ *
+ * times_per_day
+ *
+ * program_type
+ *
+ * current_snus_amount
+ *
+ * total_snus_amount
+ *
+ * streak
+ *
+ * streak_last_date
+ *
+ * money_saved
+ *
+ * last_date_modified
+ *
+ */
+
 const getAccountValues = (id, google_id) => {
   if (id || google_id) {
     return new Promise((resolve, reject) => {
@@ -238,6 +287,8 @@ app.post("/updateAntalSnusIDag", (req, res) => {
               status: "success",
               message: "amount not matching",
               antalSnusIDag: result.current_snus_amount,
+              nedsatAntalSnus:
+                result.times_per_day - result.current_snus_amount,
             });
             return result;
           }
@@ -263,6 +314,7 @@ app.post("/updateAntalSnusIDag", (req, res) => {
             antalSnusIDag: result.current_snus_amount,
             total_snus_amount: result.total_snus_amount,
             last_date_modified: result.last_date_modified,
+            times_per_day: result.times_per_day,
           };
         res.send({ status: "failure", message: null });
       })
@@ -299,11 +351,13 @@ app.post("/updateAntalSnusIDag", (req, res) => {
           "last_date_modified",
           `'${getStringifyedDate()}'`
         );
+        return result;
       })
-      .then(() => {
+      .then((result) => {
         res.send({
           status: "success",
           message: "Successfully updated database",
+          nedsatAntalSnus: result.times_per_day - req.body.antalSnusIDag,
         });
       });
   });
