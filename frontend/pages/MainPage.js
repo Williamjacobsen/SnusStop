@@ -16,8 +16,8 @@ export default function MainPage({ userInfo }) {
   const [home, setHome] = React.useState(true);
   const [statistics, setStatistics] = React.useState(false);
 
+  const [pengePerSnus, setPengePerSnus] = React.useState(0);
   const [nedsatAntalSnus, setNedsatAntalSnus] = React.useState(0);
-
   const [streak, setStreak] = React.useState(0);
   const [pengeSparet, setPengeSparet] = React.useState(0);
   const [antalSnusIDag, setAntalSnusIDag] = React.useState(0);
@@ -30,7 +30,7 @@ export default function MainPage({ userInfo }) {
 
   React.useEffect(() => {
     try {
-      fetch(`${backendURL.NgrokURL}/streak`, {
+      fetch(`${backendURL.NgrokURL}/streak&money_saved`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -46,11 +46,14 @@ export default function MainPage({ userInfo }) {
           if (res?.streak) {
             setStreak(res.streak);
           }
+          if (res?.money_saved) {
+            setPengeSparet(res.money_saved);
+          }
         });
     } catch (err) {
       console.error(err);
     }
-  }, []);
+  }, [nedsatAntalSnus]);
 
   React.useEffect(() => {
     console.log(`antalSnusIDag ${antalSnusIDag}`);
