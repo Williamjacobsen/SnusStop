@@ -298,7 +298,7 @@ app.post("/UserData", (req, res) => {
   });
 });
 
-app.post("/streak", (req, res) => {
+app.post("/streak&money_saved", (req, res) => {
   if (req.body?.googleID) {
     getAccountValues(null, req.body.googleID)
       .then((values) => {
@@ -307,24 +307,36 @@ app.post("/streak", (req, res) => {
           stringifyedDate(getDate())
         ) {
           values.streak = values.streak + 1;
-          return values;
+          return ["newStreak", values];
         }
-        return values;
+        return [false, values];
       })
       .then((values) => {
-        if (!values.streak) {
+        if (!values[1].streak) {
           res.send({ status: "failure", message: null });
           return false;
         }
-        handleUpdateValue(res, values.id, "accounts", "streak", values.streak);
-        return values.streak;
+        if (values[0] === "newStreak") {
+          handleUpdateValue(
+            res,
+            values.id,
+            "accounts",
+            "streak",
+            values.streak
+          );
+        }
+        return values[1];
       })
-      .then((streak) => {
-        if (streak) {
+      .then((result) => {
+        if (result) {
           res.send({
             status: "success",
-            message: "streak",
-            streak: streak,
+            message: null,
+            streak: result.streak,
+            money_saved: Math.round(
+              (result.money_per_week / 7 / result.times_per_day) *
+                result.total_snus_amount
+            ),
           });
         }
       });
@@ -334,8 +346,7 @@ app.post("/streak", (req, res) => {
 app.post("/updateAntalSnusIDag", (req, res) => {
   console.log(req.body);
 
-  // new function called getAntalSnusIDag - maybe
-  let amountMatching = true;
+  // make new app.post that only runs on render
   if (!req.body?.antalSnusIDag) {
     getAccountValues(false, req.body.userInfo.id)
       .then((result) => {
@@ -345,7 +356,6 @@ app.post("/updateAntalSnusIDag", (req, res) => {
             result.current_snus_amount != undefined ||
             result.current_snus_amount != 0
           ) {
-            amountMatching = false;
             res.send({
               status: "success",
               message: "amount not matching",
@@ -353,17 +363,13 @@ app.post("/updateAntalSnusIDag", (req, res) => {
               nedsatAntalSnus:
                 result.times_per_day - result.current_snus_amount,
             });
-            return result;
+            return [true, result];
           }
         }
       })
       .then((result) => {
         console.log(result);
       });
-  }
-
-  if (!amountMatching) {
-    res.send({ status: "failure", message: null });
     return;
   }
 
