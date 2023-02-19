@@ -22,6 +22,8 @@ export default function MainPage({ userInfo }) {
   const [pengeSparet, setPengeSparet] = React.useState(0);
   const [antalSnusIDag, setAntalSnusIDag] = React.useState(0);
 
+  const [isRendered, setIsRendered] = React.useState(false);
+
   React.useEffect(() => {
     console.log(
       `\nmenu : ${menu}\nhome : ${home}\nstatistics : ${statistics}\n`
@@ -67,6 +69,7 @@ export default function MainPage({ userInfo }) {
         body: JSON.stringify({
           antalSnusIDag: antalSnusIDag,
           userInfo: userInfo,
+          isRendered: isRendered,
         }),
       })
         .then((res) => res.json())
@@ -75,6 +78,7 @@ export default function MainPage({ userInfo }) {
           if (res?.antalSnusIDag) {
             // if just logged in
             setAntalSnusIDag(res.antalSnusIDag);
+            setIsRendered(true);
           }
           if (res?.nedsatAntalSnus) {
             setNedsatAntalSnus(res.nedsatAntalSnus);
