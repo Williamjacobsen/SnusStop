@@ -346,8 +346,8 @@ app.post("/streak&money_saved", (req, res) => {
 app.post("/updateAntalSnusIDag", (req, res) => {
   console.log(req.body);
 
-  // make new app.post that only runs on render
-  if (!req.body?.antalSnusIDag) {
+  // make state that checks if it have rendered - needs test
+  if (!req.body?.isRendered) {
     getAccountValues(false, req.body.userInfo.id)
       .then((result) => {
         if (result.last_date_modified == stringifyedDate(getDate())) {
